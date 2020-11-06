@@ -13,13 +13,32 @@ class newEntryForm(forms.Form):
     text = forms.Textarea()
 
 def index(request, title = "", is_new = False):
+    entries = util.list_entries()
     if is_new:
         if request.method == "POST":
-            pass
+            form = newEntryForm(request.POST)
+            if form.is_valid():
+                title = form.cleaned_data["title"]
+                if title in entries:
+                    return render(request, "encyclopedia/text_area.html", {
+                        "form": searchForm(),
+                        "hid": "visible",
+                        "eform": form
+                    })
+                else:
+                    util.save_entry(title, form.cleaned_data["text"])
+                    return HttpResponseRedirect(reverse(index, args = (title, )))
+            else:
+                return render(request, "encyclopedia/text_area.html", {
+                    "form": searchForm(), 
+                    "hid": "hidden",
+                    "eform": form
+                })
         else:
-            return render(request, "encyclopedia/text_area.html" {
+            return render(request, "encyclopedia/text_area.html", {
                 "form": searchForm(), 
-                "hid": "hidden"
+                "hid": "hidden",
+                "eform": newEntryForm()
             })
     elif request.method == "POST":
         form = searchForm(request.POST)
@@ -37,7 +56,6 @@ def index(request, title = "", is_new = False):
                     "form": form
                 })
             else:
-                entries = util.list_entries()
                 found_entries = []
                 for entry in entries:
                     if title in entry.upper():
@@ -47,6 +65,6 @@ def index(request, title = "", is_new = False):
                     "form": form
                 })
         return render(request, "encyclopedia/index.html", {
-            "entries": util.list_entries(), 
+            "entries": entries, 
             "form": form
             })

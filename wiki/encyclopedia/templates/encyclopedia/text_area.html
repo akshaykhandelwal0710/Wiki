@@ -8,6 +8,6 @@
     <form action = "{% url 'index' '' 'True'%}" method = "POST">
         <span style = "visibility: {{ hid }};" class = "text-danger"> Page already exists! </span>
         {% csrf_token %}
-        {{ form }}
+        {{ eform }}
     </form>
 {% endblock %}
