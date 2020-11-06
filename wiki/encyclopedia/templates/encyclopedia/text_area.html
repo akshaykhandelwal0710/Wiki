@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block body %}
-    <form action = "{% url 'index' isnew=True %}" method = "POST">
+    <form action = "{% url 'index' is_new=True %}" method = "POST">
         <span style = "visibility: {{ hid }};" class = "text-danger"> Page already exists! </span>
         {% csrf_token %}
         {{ eform }}
