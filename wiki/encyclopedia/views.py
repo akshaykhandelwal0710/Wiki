@@ -52,6 +52,9 @@ def new(request):
         form = newEntryForm(request.POST)
         if form.is_valid():
             title = form.cleaned_data["title"]
+            title = title.lower()
+            for i in range(len(entries)):
+                entries[i] = entries[i].lower()
             if title in entries:
                 return render(request, "encyclopedia/text_area.html", {
                         "form": searchForm(),
@@ -59,6 +62,7 @@ def new(request):
                         "eform": form
                     })
             else:
+                title = title[0].upper() + title[1:]
                 util.save_entry(title, form.cleaned_data["text"])
                 return HttpResponseRedirect(reverse(index, args = (title, )))
         else:
