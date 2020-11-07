@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django import forms
+import random
+import markdown2
 
 from . import util
 
@@ -10,37 +12,11 @@ class searchForm(forms.Form):
 
 class newEntryForm(forms.Form):
     title = forms.CharField(label = "Title")
-    text = forms.Textarea()
+    text = forms.CharField(widget = forms.Textarea, label = "Markdown")
 
-def index(request, title = "", is_new = False):
+def index(request, title = ""):
     entries = util.list_entries()
-    if is_new:
-        if request.method == "POST":
-            form = newEntryForm(request.POST)
-            if form.is_valid():
-                title = form.cleaned_data["title"]
-                if title in entries:
-                    return render(request, "encyclopedia/text_area.html", {
-                        "form": searchForm(),
-                        "hid": "visible",
-                        "eform": form
-                    })
-                else:
-                    util.save_entry(title, form.cleaned_data["text"])
-                    return HttpResponseRedirect(reverse(index, args = (title, )))
-            else:
-                return render(request, "encyclopedia/text_area.html", {
-                    "form": searchForm(), 
-                    "hid": "hidden",
-                    "eform": form
-                })
-        else:
-            return render(request, "encyclopedia/text_area.html", {
-                "form": searchForm(), 
-                "hid": "hidden",
-                "eform": newEntryForm()
-            })
-    elif request.method == "POST":
+    if request.method == "POST":
         form = searchForm(request.POST)
         form.is_valid()
         return HttpResponseRedirect(reverse(index, args = (form.cleaned_data["search"],)))
@@ -50,6 +26,7 @@ def index(request, title = "", is_new = False):
             title = title.upper()
             entry = util.get_entry(title)
             if entry:
+                entry = markdown2.markdown(entry)
                 return render(request, "encyclopedia/title.html", {
                     "entry": entry, 
                     "title": title,
@@ -68,3 +45,37 @@ def index(request, title = "", is_new = False):
             "entries": entries, 
             "form": form
             })
+
+def new(request):
+    entries = util.list_entries()
+    if request.method == "POST":
+        form = newEntryForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data["title"]
+            if title in entries:
+                return render(request, "encyclopedia/text_area.html", {
+                        "form": searchForm(),
+                        "hid": "visible",
+                        "eform": form
+                    })
+            else:
+                util.save_entry(title, form.cleaned_data["text"])
+                return HttpResponseRedirect(reverse(index, args = (title, )))
+        else:
+            return render(request, "encyclopedia/text_area.html", {
+                    "form": searchForm(), 
+                    "hid": "hidden",
+                    "eform": form
+                })
+    else:
+        return render(request, "encyclopedia/text_area.html", {
+                "form": searchForm(), 
+                "hid": "hidden",
+                "eform": newEntryForm()
+            })
+
+def rand(request):
+    entries = util.list_entries()
+    l = len(entries)
+    x = random.randint(0, l - 1)
+    return HttpResponseRedirect(reverse(index, args = (entries[x], )))
