@@ -24,8 +24,11 @@ def index(request, title = ""):
         form = searchForm()
         if title:
             title = title.upper()
-            entry = util.get_entry(title)
-            if entry:
+                ent = None
+            for entry in entries:
+                if entry.upper() == title:
+                     ent = util.get_entry(entry)
+            if ent:
                 entry = markdown2.markdown(entry)
                 return render(request, "encyclopedia/title.html", {
                     "entry": entry, 
