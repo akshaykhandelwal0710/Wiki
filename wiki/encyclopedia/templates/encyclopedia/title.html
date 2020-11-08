@@ -7,4 +7,7 @@
 {% block body %}
     <h1 style = "text-align:center;"> {{ title }} </h1>
     {{ entry |safe}}
+    <footer style = "margin-bottom:0px;">
+        <a href = {% url 'edit' entry%}> Edit </a>
+    </footer>
 {% endblock %}
