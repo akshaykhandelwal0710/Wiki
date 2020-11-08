@@ -24,7 +24,7 @@ def index(request, title = ""):
         form = searchForm()
         if title:
             title = title.upper()
-                ent = None
+            ent = None
             for entry in entries:
                 if entry.upper() == title:
                      ent = util.get_entry(entry)
