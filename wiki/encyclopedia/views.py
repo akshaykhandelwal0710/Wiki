@@ -31,7 +31,7 @@ def index(request, title = ""):
             if ent:
                 entry = markdown2.markdown(entry)
                 return render(request, "encyclopedia/title.html", {
-                    "entry": entry, 
+                    "entry": ent, 
                     "title": title,
                     "form": form
                 })
