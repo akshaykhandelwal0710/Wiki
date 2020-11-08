@@ -29,7 +29,7 @@ def index(request, title = ""):
                 if entry.upper() == title:
                      ent = util.get_entry(entry)
             if ent:
-                entry = markdown2.markdown(entry)
+                ent = markdown2.markdown(ent)
                 return render(request, "encyclopedia/title.html", {
                     "entry": ent, 
                     "title": title,
